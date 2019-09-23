@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Rendering infrastructure for front-end applications
+
+Parameters:
+  Hostname:
+    Type: CommaDelimitedList
+    Description: Comma Delimited List of all domain aliasses to use for this distribution
+  CertificateArn:
+    Type: String
+    Description: ACM Certificate ARN
+  LambdaName:
+    Type: String
+    Description: Name of the Lambda
+
+Resources:
+  RenderLambdaVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref LambdaName
+
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases: !Ref Hostname
+        Comment: Linc OAuth Redirect
+        DefaultCacheBehavior:
+          AllowedMethods:
+            ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+          Compress: true
+          DefaultTTL: 0
+          ForwardedValues:
+            Cookies:
+              Forward: all
+            QueryString: true
+          LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: !Ref RenderLambdaVersion
+          MaxTTL: 31536000
+          MinTTL: 0
+          TargetOriginId: renderer
+          ViewerProtocolPolicy: redirect-to-https
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: true
+        Origins:
+          # never actually used
+          - CustomOriginConfig:
+              OriginKeepaliveTimeout: 60
+              OriginProtocolPolicy: https-only
+              OriginReadTimeout: 30
+              OriginSSLProtocols:
+                - TLSv1.2
+            DomainName: shared.renderer.linc.sh
+            Id: renderer
+        PriceClass: PriceClass_All
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          MinimumProtocolVersion: TLSv1.2_2018
+          SslSupportMethod: sni-only
