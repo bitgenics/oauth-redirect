@@ -1,3 +1,4 @@
+const { URLSearchParams } = require("url");
 const validateUrl = require("./src/validateUrl");
 
 const errorResponse = (statusCode, body) => ({
