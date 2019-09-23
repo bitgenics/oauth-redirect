@@ -1,5 +1,10 @@
 const validateUrl = require("./src/validateUrl");
 
+const errorResponse = (statusCode, body) => ({
+  statusCode,
+  body
+});
+
 exports.handler = async event => {
   const record = event.Records[0];
   const searchParams = record.cf.request.querystring;
@@ -18,24 +23,12 @@ exports.handler = async event => {
         };
         return response;
       } else {
-        const response = {
-          statusCode: 403,
-          body: "invalid_redirect_url"
-        };
-        return response;
+        return errorResponse(403, "invalid_redirect_url");
       }
     } else {
-      const response = {
-        statusCode: 500,
-        body: "missing_redirect_url"
-      };
-      return response;
+      return errorResponse(500, "missing_redirect_url");
     }
   } else {
-    const response = {
-      statusCode: 500,
-      body: "missing_state_param"
-    };
-    return response;
+    return errorResponse(500, "missing_state_params");
   }
 };
