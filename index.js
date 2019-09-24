@@ -4,7 +4,7 @@ const { URLSearchParams } = require("url");
 const LINC_PREVIEW_URL_REGEX = /examplesitename--(.*)\.linc-preview\.sh/;
 const PRODUCTION_URL_REGEX = /examplename\.com/;
 
-exports.validateUrl = url => {
+const validateUrl = url => {
   const isPreviewLink = LINC_PREVIEW_URL_REGEX.exec(url);
   const isProductionLink = PRODUCTION_URL_REGEX.exec(url);
   if (isPreviewLink || isProductionLink) {
@@ -13,6 +13,7 @@ exports.validateUrl = url => {
     return false;
   }
 };
+exports.validateUrl = validateUrl;
 
 const errorResponse = (statusCode, body) => {
   return {
