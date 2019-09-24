@@ -1,12 +1,16 @@
 const { URLSearchParams } = require("url");
 const validateUrl = require("./src/validateUrl");
 
-const errorResponse = (statusCode, body) => ({
-  statusCode,
-  body
-});
+const errorResponse = (statusCode, body) => {
+  return {
+    status: JSON.stringify(statusCode),
+    statusDescription: "Placeholder status description",
+    body
+  };
+};
 
-exports.handler = async event => {
+exports.handler = (event, context, callback) => {
+  console.log({ event, context, callback });
   const record = event.Records[0];
   const searchParams = record.cf.request.querystring;
   const params = new URLSearchParams(searchParams);
@@ -17,19 +21,29 @@ exports.handler = async event => {
       const isValidUrl = validateUrl(redirecturl);
       if (isValidUrl) {
         const response = {
-          statusCode: 302,
+          status: "302",
+          statusDescription: "Found",
           headers: {
-            Location: redirecturl + "?" + searchParams
+            location: [
+              {
+                key: "Location",
+                value: redirecturl + "?" + searchParams
+              }
+            ]
           }
         };
-        return response;
+        console.log(response);
+        callback(null, response);
       } else {
-        return errorResponse(403, "invalid_redirect_url");
+        const response = errorResponse(403, "invalid_redirect_url");
+        callback(null, response);
       }
     } else {
-      return errorResponse(500, "missing_redirect_url");
+      const response = errorResponse(500, "missing_redirect_url");
+      callback(null, response);
     }
   } else {
-    return errorResponse(500, "missing_state_params");
+    const response = errorResponse(500, "missing_state_params");
+    callback(null, response);
   }
 };
