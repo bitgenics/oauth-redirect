@@ -1,5 +1,18 @@
 const { URLSearchParams } = require("url");
-const validateUrl = require("./src/validateUrl");
+
+// customize these two regex patterns
+const LINC_PREVIEW_URL_REGEX = /examplesitename--(.*)\.linc-preview\.sh/;
+const PRODUCTION_URL_REGEX = /examplename\.com/;
+
+exports.validateUrl = url => {
+  const isPreviewLink = LINC_PREVIEW_URL_REGEX.exec(url);
+  const isProductionLink = PRODUCTION_URL_REGEX.exec(url);
+  if (isPreviewLink || isProductionLink) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 const errorResponse = (statusCode, body) => {
   return {
