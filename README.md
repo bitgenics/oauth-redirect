@@ -7,6 +7,10 @@ This Lambda serves to validate and then redirect to a provided URL.
 1. Clone and then install the project:
 
 ```bash
+https://github.com/bitgenics/oauth-redirect.git
+```
+
+```bash
 npm install
 ```
 
@@ -17,6 +21,8 @@ const LINC_PREVIEW_URL_REGEX = /examplesitename--(.*)\.linc-preview\.sh/;
 const PRODUCTION_URL_REGEX = /examplename\.com/;
 ```
 
+These regex patterns are used to validate a provided redirect URL.
+
 3. Manually create a new AWS Lambda using the contents of `index.js` - make sure to select a Runtime of NodeJS 10.x
 
 4. Manually create a new Cloud Front Distribution using the provided `cf.yaml` file
@@ -25,14 +31,14 @@ const PRODUCTION_URL_REGEX = /examplename\.com/;
 
 Once your Lambda is up and running, you can start sending requests to it.
 
-When making a request to the Lambda, ensure that your `state` query argument in your query string contains a `redirecturl` entry. 
+When making a request to the Lambda, ensure that your `state` query argument in your query string contains a `redirecturl` entry.
 
 You can add a `redirecturl` to your `state` query argument as follows:
 
 ```javascript
 const redirecturl = "https://sitename--abcd1234--production.linc-preview.sh/";
 const stateQueryString = `redirecturl=${encodeURIComponent(redirecturl)}`;
-const queryString = `?state=${encodeURIComponent(state)}`
+const queryString = `?state=${encodeURIComponent(state)}`;
 ```
 
 Once your `redirecturl` has been successfully validated, the Lambda will redirect to the validated URL, passing along the original query string.
