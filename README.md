@@ -7,7 +7,7 @@ This Lambda serves to validate and then redirect to a provided URL.
 1. Clone and then install the project:
 
 ```bash
-https://github.com/bitgenics/oauth-redirect.git
+git clone https://github.com/bitgenics/oauth-redirect.git
 ```
 
 ```bash
